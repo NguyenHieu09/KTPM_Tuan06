@@ -1,5 +1,5 @@
-# KTPM_Tuan05
-thực hành kiến trúc phần mềm tuần 5
+# KTPM_Tuan06
+thực hành kiến trúc phần mềm tuần 6
 ### Danh sách các sản phẩm
 ![img.png](img.png)
 
