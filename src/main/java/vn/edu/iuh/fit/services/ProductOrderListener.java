@@ -57,7 +57,7 @@ public class ProductOrderListener {
 
     private boolean checkStockAvailability(String cartJson) {
         try {
-            // Giả sử bạn sử dụng thư viện Gson để phân tích chuỗi JSON
+
             Gson gson = new Gson();
             JsonArray jsonArray = gson.fromJson(cartJson, JsonArray.class);
 
@@ -102,7 +102,7 @@ public class ProductOrderListener {
 
     private void updateStock(String cartJson) {
         try {
-            // Giả sử bạn sử dụng thư viện Gson để phân tích chuỗi JSON
+
             Gson gson = new Gson();
             JsonArray jsonArray = gson.fromJson(cartJson, JsonArray.class);
 

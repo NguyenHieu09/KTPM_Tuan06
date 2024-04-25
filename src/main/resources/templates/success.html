@@ -14,19 +14,9 @@
 <head>
     <meta charset="UTF-8">
     <title>JSON Viewer</title>
-    <script>
-        function displayJSON() {
-            var cartJson = document.getElementById("cart-json").textContent;
-            var cartObject = JSON.parse(cartJson);
-            var jsonString = JSON.stringify(cartObject, null, 4);
-            document.getElementById("json-viewer").textContent = jsonString;
-        }
-    </script>
+
 </head>
-<body onload="displayJSON()">
-<h1>Thông tin JSON</h1>
-<pre id="json-viewer"></pre>
-<!-- Assuming "cartjson" is your cart JSON data -->
-<p id="cart-json" th:text="${cartjson}" style="display: none"></p>
+<body>
+<h1>Đặt hàng thành công</h1>
 </body>
 </html>
