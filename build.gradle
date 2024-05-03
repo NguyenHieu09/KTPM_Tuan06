@@ -36,6 +36,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
 //for email sending
     implementation 'org.eclipse.angus:angus-mail:2.0.3'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 //    implementation 'jakarta.mail:jakarta.mail-api:2.1.3'
 }
 

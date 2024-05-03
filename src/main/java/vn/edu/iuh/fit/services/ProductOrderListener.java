@@ -8,6 +8,7 @@ import com.google.gson.JsonSyntaxException;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.TextMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import vn.edu.iuh.fit.models.Product;
@@ -21,8 +22,11 @@ import java.util.Optional;
 public class ProductOrderListener {
     private final ProductRepository productRepository;
 
-    public ProductOrderListener(ProductRepository productRepository) {
+    private final EmailService emailService;
+
+    public ProductOrderListener(ProductRepository productRepository, EmailService emailService) {
         this.productRepository = productRepository;
+        this.emailService = emailService;
     }
 
     @JmsListener(destination = "order_products")
@@ -35,6 +39,9 @@ public class ProductOrderListener {
             EncodingText encodingText = new Base64EncodingText();
             try {
                 String cartJson = encodingText.decrypt(encodedCartJson);
+                System.out.println(cartJson);
+                String email = getEmailFromCartJson(cartJson);
+                String name = getNameFromCartJson(cartJson);
 
                 // Kiểm tra số lượng hàng tồn kho
                 if (!checkStockAvailability(cartJson)) {
@@ -42,10 +49,13 @@ public class ProductOrderListener {
                     System.out.println("Stock is available for the order");
                     // Trừ đi số lượng sản phẩm trong kho và cập nhật lại
                     updateStock(cartJson);
+                    String success = "Hi " +name+ ", đơn hàng của bạn được chấp nhận, vui lòng để ý điện thoại trong thời gian tới và sản phẩm bạn đã đặt " ;
+                    emailService.sendEmail(email, "Order success", success);
                     // Tiếp tục xử lý đơn hàng ở đây
                 } else {
                     // Xử lý khi hàng tồn kho không đủ
                     System.out.println("Insufficient stock for the order");
+                    emailService.sendEmail(email, "Order failed", "Rất tiếc, đơn hàng của bạn đã bị hủy bỏ do hàng tồn kho không đủ.");
                     // Xử lý thông báo hoặc thực hiện hành động khi hàng tồn kho không đủ
                 }
             } catch (Exception e) {
@@ -126,6 +136,34 @@ public class ProductOrderListener {
             }
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
+        }
+    }
+
+    private String getEmailFromCartJson(String cartJson) {
+        try {
+            Gson gson = new Gson();
+            JsonArray jsonArray = gson.fromJson(cartJson, JsonArray.class);
+
+            JsonObject order = jsonArray.get(0).getAsJsonObject().get("order").getAsJsonObject();
+            JsonObject customer = order.get("customer").getAsJsonObject();
+            return customer.get("email").getAsString();
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String getNameFromCartJson(String cartJson) {
+        try {
+            Gson gson = new Gson();
+            JsonArray jsonArray = gson.fromJson(cartJson, JsonArray.class);
+
+            JsonObject order = jsonArray.get(0).getAsJsonObject().get("order").getAsJsonObject();
+            JsonObject customer = order.get("customer").getAsJsonObject();
+            return customer.get("name").getAsString();
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
